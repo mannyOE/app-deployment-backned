@@ -1,7 +1,5 @@
 
-# Typescript Bootstrap
-
-A bootstrap for building express apps with typescript
+# Deployment App Typescript
 
 ## Getting Started
 
@@ -79,10 +77,7 @@ Please read [CONTRIBUTING.md]() for details on our code of conduct, and the proc
 
 ## Authors
 
-- **benx**
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
-
+- **mannyoe**
 ## License
 
 see the [LICENSE.md](license.md) file for details

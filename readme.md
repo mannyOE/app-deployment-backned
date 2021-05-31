@@ -1,5 +1,3 @@
-[![CircleCI](https://circleci.com/gh/natterbase/Zeedas-Config-Deployment.svg?style=svg&circle-token=ffe4a1f3d4439797f0392896cbd48ee225af09f7)](https://circleci.com/gh/natterbase/Zeedas-Config-Deployment)
-
 
 # Typescript Bootstrap
 

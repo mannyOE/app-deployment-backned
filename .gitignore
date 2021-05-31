@@ -10,3 +10,4 @@ k8t/*
 argocd-install.yaml
 zeedas
 tmp
+firebase-service.json

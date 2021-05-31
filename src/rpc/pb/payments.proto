@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package billingpackage;
+
+message BillingRequest {
+    string payload = 3;
+}
+message BillingResponse {
+    bool done = 4;
+}
+
+service Billing {
+    rpc initiateBilling (BillingRequest) returns (BillingResponse) {}
+}

@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package notifypackage;
+
+message NotifyRequest {
+    string payload = 1;
+}
+message NotifyResponse {
+    bool done = 2;
+}
+
+service Notify {
+    rpc notifyByEmail (NotifyRequest) returns (NotifyResponse) {}
+    rpc notifyByPush (NotifyRequest) returns (NotifyResponse) {}
+    rpc notifyBySms (NotifyRequest) returns (NotifyResponse) {}
+}

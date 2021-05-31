@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package userpackage;
+
+message UserExistRequest {
+  string id = 1;
+}
+
+message UserExistsResponse {
+  bool exist = 1;
+}
+
+message UserRequest {
+    string payload = 2;
+  }
+  
+  message userResponse {
+    string account = 2;
+  }
+  message membersResponse {
+    string members = 3;
+  }
+
+service User {
+  rpc decodeToken (UserRequest) returns (userResponse) {}
+  rpc userById (UserRequest) returns (userResponse) {}
+  rpc addUserToProject (UserRequest) returns (userResponse) {}
+  rpc removeUserFromProject (UserRequest) returns (userResponse) {}
+  rpc assignUserRoleInProject (UserRequest) returns (userResponse) {}
+  rpc removeUserRoleInProject (UserRequest) returns (userResponse) {}
+  rpc getUserRoleInProject (UserRequest) returns (userResponse) {}
+  rpc getTeamMembersByCompany (UserRequest) returns (membersResponse) {}
+  rpc fetchTeamMembers (UserRequest) returns (userResponse) {}
+}

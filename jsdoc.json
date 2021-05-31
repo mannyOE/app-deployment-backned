@@ -1,0 +1,22 @@
+{
+    "source": {
+        "include": ["./src"],
+        "includePattern": ".ts$",
+        "excludePattern": "(node_modules/|docs|public|dist)"
+    },
+    "tags": {
+        "allowUnknownTags": ["optional", "category"]
+    },
+    "plugins": [
+        "plugins/markdown",
+        "node_modules/better-docs/typescript",
+        "node_modules/better-docs/category"
+    ],
+    "opts": {
+        "encoding": "utf8",
+        "readme": "./readme.md",
+        "destination": "./docs/",
+        "recurse": true,
+        "template": "node_modules/better-docs"
+    }
+}

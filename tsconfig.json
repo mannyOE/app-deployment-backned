@@ -1,0 +1,31 @@
+{
+	"compilerOptions": {
+		"module": "commonjs",
+		"target": "es6",
+		"outDir": "./dist",
+		"sourceMap": true,
+		"moduleResolution": "node",
+		"strict": true,
+		"baseUrl": "./src",
+		"typeRoots": ["./src/types"],
+		"paths": {
+			"@src/*": ["./*"],
+			"@configs/*": ["configs/*"],
+			"@controllers/*": ["controllers/*"],
+			"@exceptions/*": ["exceptions/*"],
+			"@models/*": ["models/*"],
+			"@modules/*": ["modules/*"],
+			"@rpc/*": ["rpc/*"],
+			"@routes/*": ["routes/*"]
+		}
+	},
+	"include": ["./src/types/**/*.d.ts", "./src/**/*.ts"],
+	"exclude": ["node_modules", "./src/**/*.spec.ts", "**/__test__/*.ts"],
+	"files": [
+		"./node_modules/@types/mocha/index.d.ts",
+		"./node_modules/@types/express/index.d.ts",
+		"./node_modules/@types/mongoose/index.d.ts",
+		"./node_modules/@types/chai/index.d.ts"
+	],
+	"compileOnSave": true
+}

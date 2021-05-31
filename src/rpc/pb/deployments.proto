@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package deploymentPackage;
+
+message DeployRequest {
+    string payload = 1;
+}
+message DeployResponse {
+    bool done = 2;
+}
+
+service Deployment {
+    rpc createBranch (DeployRequest) returns (DeployResponse) {}
+    rpc submit (DeployRequest) returns (DeployResponse) {}
+    rpc reject (DeployRequest) returns (DeployResponse) {}
+    rpc approve (DeployRequest) returns (DeployResponse) {}
+}

@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package userpackage;
+
+message UserExistRequest {
+  string id = 1;
+}
+
+message UserExistsResponse {
+  bool exist = 1;
+}
+
+service User {
+  rpc userExists (UserExistRequest) returns (UserExistsResponse) {}
+}

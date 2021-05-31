@@ -1,0 +1,148 @@
+# CircleCI 2.0 configuration file
+
+version: 2
+defaults: &defaults
+  docker:
+    - image: circleci/node:carbon
+  working_directory: ~/zeedas
+  environment:
+    ZEEDAS_DOCKER_SERVICE_NAME: zeedas_config
+
+docker-sign-in: &docker-sign-in
+  name: Sign into Docker registry
+  command: |
+    docker login \
+        -u ${ZEEDAS_DOCKER_USER} \
+        -p ${ZEEDAS_DOCKER_PASS} 
+
+attach_workspace: &attach_workspace
+  attach_workspace:
+    at: ~/zeedas
+
+persist_to_workspace: &persist_to_workspace
+  persist_to_workspace:
+    root: .
+    paths: .
+
+jobs:
+  checkout_code:
+    <<: *defaults
+    steps:
+      - checkout
+      - *persist_to_workspace
+
+  build:
+    <<: *defaults
+    steps:
+      - *attach_workspace
+      - setup_remote_docker
+      - run: *docker-sign-in
+      - run:
+          name: Build application Docker image
+          command: |
+            docker build -t ${ZEEDAS_DOCKER_USER}/${ZEEDAS_DOCKER_SERVICE_NAME} -f docker/Dockerfile .
+      - run:
+          name: Push Docker image 
+          command: |
+            IMAGE_TAG=$(git rev-parse --short HEAD)
+            docker tag "${ZEEDAS_DOCKER_USER}/${ZEEDAS_DOCKER_SERVICE_NAME}" "${ZEEDAS_DOCKER_USER}/${ZEEDAS_DOCKER_SERVICE_NAME}:${IMAGE_TAG}"
+            docker push "${ZEEDAS_DOCKER_USER}/${ZEEDAS_DOCKER_SERVICE_NAME}:${IMAGE_TAG}"
+
+  deploy_dev:
+    <<: *defaults
+    steps:
+      # Adds the keys from the UI so we can access a remote service
+      - *attach_workspace
+      - add_ssh_keys:
+          fingerprints:
+            - "4f:1e:88:50:a1:d0:06:ce:bc:31:38:ab:2e:b0:df:2a"
+
+      # This gets the local Docker service started
+      - setup_remote_docker
+      - run:
+          name: Add the keys to the known hosts
+          command: |
+            ssh-keyscan -H ${ZEEDAS_DEPLOY_HOST_DEV} >> ~/.ssh/known_hosts
+      - run:
+          name: Pull Docker image onto dev instance
+          command: |
+            IMAGE_TAG=$(git rev-parse --short HEAD)
+            ssh ${ZEEDAS_DOCKER_USER}@${ZEEDAS_DEPLOY_HOST_DEV} "docker pull ${ZEEDAS_DOCKER_USER}/${ZEEDAS_DOCKER_SERVICE_NAME}:${IMAGE_TAG}"
+      - run:
+          name: Do a rolling service update 
+          command: |
+            IMAGE_TAG=$(git rev-parse --short HEAD)
+            ssh ${ZEEDAS_DOCKER_USER}@${ZEEDAS_DEPLOY_HOST_DEV} \
+                "docker service update \
+                    --env-add NAME=VALUE \
+                    --image=${ZEEDAS_DOCKER_USER}/${ZEEDAS_DOCKER_SERVICE_NAME}:${IMAGE_TAG} \
+                    --with-registry-auth \
+                    ${ZEEDAS_DOCKER_SERVICE_NAME} \
+                | uniq \
+                "
+
+  deploy_stg:
+    <<: *defaults
+    steps:
+      # Adds the keys from the UI so we can access a remote service
+      - *attach_workspace
+      - add_ssh_keys:
+          fingerprints:
+            - "4f:1e:88:50:a1:d0:06:ce:bc:31:38:ab:2e:b0:df:2a"
+
+      # This gets the local Docker service started
+      - setup_remote_docker
+      - run:
+          name: Add the keys to the known hosts
+          command: |
+            ssh-keyscan -H ${ZEEDAS_DEPLOY_HOST_STG} >> ~/.ssh/known_hosts
+      - run:
+          name: Pull Docker image onto staging environment
+          command: |
+            IMAGE_TAG=$(git rev-parse --short HEAD)
+            ssh ${ZEEDAS_DOCKER_USER}@${ZEEDAS_DEPLOY_HOST_STG} "docker pull ${ZEEDAS_DOCKER_USER}/${ZEEDAS_DOCKER_SERVICE_NAME}:${IMAGE_TAG}"
+      - run:
+          name: Do a rolling service update 
+          command: |
+            IMAGE_TAG=$(git rev-parse --short HEAD)
+            ssh ${ZEEDAS_DOCKER_USER}@${ZEEDAS_DEPLOY_HOST_STG} \
+                "docker service update \
+                    --env-add NAME=VALUE \
+                    --image=${ZEEDAS_DOCKER_USER}/${ZEEDAS_DOCKER_SERVICE_NAME}:${IMAGE_TAG} \
+                    --with-registry-auth \
+                    ${ZEEDAS_DOCKER_SERVICE_NAME} \
+                | uniq \
+                "
+
+workflows:
+  version: 2
+  test_build_deploy:
+    jobs:
+      - checkout_code:
+          filters:
+            branches:
+              only:
+                - develop
+                - staging
+      - build:
+          requires:
+            - checkout_code
+          filters:
+            branches:
+              only:
+                - develop
+                - staging
+      - deploy_dev:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - develop
+      - deploy_stg:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - staging

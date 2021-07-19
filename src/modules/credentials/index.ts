@@ -363,7 +363,6 @@ class Credentials extends Module {
                     merge_request = new this.merges({
                         module,
                         app: appId,
-                        submissions: 0,
                         mergeRequest: mergeRequest.iid,
 
                     })
@@ -419,7 +418,6 @@ class Credentials extends Module {
                         }
                     }
                 }
-                merge_request.submissions+=1
                 await merge_request.save()
 				break
 			case Providers.BITBUCKET:
@@ -452,7 +450,6 @@ class Credentials extends Module {
                     merge_request = await new this.merges({
                         module,
                         app: appId,
-                        submissions: 0,
                         mergeRequest: mergeRequest.id
                     }).save()
                 }
@@ -514,7 +511,6 @@ class Credentials extends Module {
                     }
                 }
                 console.log("submission complete")
-                merge_request.submissions+=1
                 await merge_request.save()
 				break
             case Providers.GITHUB:
@@ -540,7 +536,6 @@ class Credentials extends Module {
                     merge_request = new this.merges({
                         module,
                         app: appId,
-                        submissions: 0,
                         mergeRequest: mergeRequest.number
                     })
                     await merge_request.save()
@@ -607,7 +602,6 @@ class Credentials extends Module {
                         }
                     }
                 }
-                merge_request.submissions+=1
                 await merge_request.save()
 				break
 			default:

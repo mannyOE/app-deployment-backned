@@ -13,7 +13,6 @@ export interface MergeInterface extends Document {
 	 * @param {string} app The id of the app
 	 */
 	app: string
-    submissions: number
 	/**
 	 * @param {string} mergeRequest The id of the merge request
 	 */
@@ -39,9 +38,6 @@ const MergeSchema = new Schema(
 		app: {
 			type: Schema.Types.String,
 			required: true
-        },
-        submissions: {
-			type: Schema.Types.Number,
 		},
 		module: {
 			type: Schema.Types.String,
